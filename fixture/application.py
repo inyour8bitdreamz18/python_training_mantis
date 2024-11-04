@@ -1,6 +1,6 @@
 from selenium import wd
 from fixture.session import SessionHelper
-
+from fixture.project import ProjectHelper
 # Если нужно постоянно тестировать данные из БД, то добавляем DBHelper в Application
 # Если нет, то создаем отдельную фикстуру для работы с БД
 
@@ -19,6 +19,7 @@ class Application:
         #self.wd.implicitly_wait(30)
         #ссылка на файл SessionHelper, GroupHelper, ContactHelper
         self.session = SessionHelper(self)
+        self.project = ProjectHelper(self)
         self.base_url = base_url
 
     def is_valid(self):
