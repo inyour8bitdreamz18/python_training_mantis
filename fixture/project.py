@@ -3,6 +3,7 @@ import random
 import re
 
 
+
 class ProjectHelper:
 
     def __init__(self, app):
@@ -16,8 +17,8 @@ class ProjectHelper:
         wd.find_element_by_css_selector("input[value='Create New Project']").click()
 
 
-    def return_to_project_table(self):
-        wd = self.app.wd
+    #def return_to_project_table(self):
+        #wd = self.app.wd
 
     def create_new_project(self, project):
         wd = self.app.wd
@@ -61,8 +62,8 @@ class ProjectHelper:
     def open_projects_table(self):
         wd = self.app.wd
         # Open Manage tab
-        wd.find_element_by_css_selector("a[href='/mantisbt-1.2.20/manage_overview_page.php']").click()
-        wd.find_element_by_css_selector("a[href='/mantisbt-1.2.20/manage_proj_page.php']").click()
+        wd.find_element_by_link_text("Manage").click()
+        wd.find_element_by_link_text("Manage Projects").click()
 
 
     def open_project_by_id(self, project_id):
@@ -75,7 +76,6 @@ class ProjectHelper:
     def check_if_name_is_unique(self, project_name):
         wd = self.app.wd
         projects = self.get_project_list()
-        print(projects)
         return any(project.name == project_name for project in projects)
 
 
@@ -91,6 +91,17 @@ class ProjectHelper:
         wd.find_element_by_css_selector('input[value="Delete Project"]').click()
         self.open_projects_table()
         self.project_cache = None
+
+
+    def extract_id(self, href):
+        id = re.search("project_id=([0-9.]+)", href).group(1)
+        return id
+
+    def count(self):
+        wd = self.app.wd
+        self.open_projects_table()
+        return len(wd.find_elements_by_name("tr.row-1")) + len(wd.find_elements_by_name("tr.row-2"))
+
 
     project_cache = None
 
@@ -116,7 +127,3 @@ class ProjectHelper:
                                                       description=description))
             return list(self.project_cache)
 
-
-    def extract_id(self, href):
-        id = re.search("project_id=([0-9.]+)", href).group(1)
-        return id

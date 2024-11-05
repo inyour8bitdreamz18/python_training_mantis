@@ -2,7 +2,7 @@ import pytest
 from fixture.application import Application
 import json
 import os.path
-
+import ftputil
 
 
 # Функция, инициализирующая Фикстуру (обязательна метка перед самой функцией)
@@ -22,23 +22,49 @@ def load_config(file):
             target = json.load(f)
     return target
 
+# pytest позволяет использовать фикстуру в др фикстурах
+@pytest.fixture(scope="session")
+def config(request):
+    return load_config(request.config.getoption("--target"))
 
 # Чтобы не читать config_file при каждом запуске, также как и с fixture, вынесем глобальную переменную target
 @pytest.fixture
-def app(request):
+def app(request, config):
     # Создает Фикстуру
     global fixture
     global target
     # Через объект request дали доступ к конфигам
     browser = request.config.getoption("--browser")
-    web_config = load_config(request.config.getoption("--target"))["web"]
-    webadmin_config = load_config(request.config.getoption("--target"))["webadmin"]
+    web_config = config["web"]
+    webadmin_config = config["webadmin"]
     if fixture is None or not fixture.is_valid():
         fixture = Application(browser=browser, base_url=web_config['baseUrl'])
     # Пароль админа нужно указывать при запуске, и он нигде не сохраняется
     fixture.session.ensure_login(username=webadmin_config['username'], password=webadmin_config['password'])
     return fixture
 
+@pytest.fixture(scope="session", autouse=True)
+def configure_server(request, config):
+    install_server_configuration(config['ftp']['host'], config['ftp']['username'], config['ftp']['password'])
+    def fin():
+        restore_server_configuration(config['ftp']['host'], config['ftp']['username'], config['ftp']['password'])
+    request.addfinalizer(fin)
+
+
+def install_server_configuration(host, username, password):
+    with ftputil.FTPHost(host, username, password) as remote:
+        if remote.path.isfile("config_inc.php.bak"):
+            remote.remove("config_inc.php.bak")
+        if remote.path.isfile("config_inc.php"):
+            remote.rename("config_inc.php", "config_inc.php.bak")
+        remote.upload(os.path.join(os.path.dirname(__file__), "resources/config_inc.php"), "config_inc.php")
+
+def restore_server_configuration(host, username, password):
+    with ftputil.FTPHost(host, username, password) as remote:
+        if remote.path.isfile("config_inc.php.bak"):
+            if remote.path.isfile("config_inc.php"):
+                remote.remove("config_inc.php")
+            remote.rename("config_inc.php.bak", "config_inc.php")
 
 # Разрушает Фикстуру и разлогинивается
 # autouse=True - автоматически будет вызываться
