@@ -38,7 +38,7 @@ def app(request, config):
     web_config = config["web"]
     webadmin_config = config["webadmin"]
     if fixture is None or not fixture.is_valid():
-        fixture = Application(browser=browser, base_url=web_config['baseUrl'])
+        fixture = Application(browser=browser, config=config)
     # Пароль админа нужно указывать при запуске, и он нигде не сохраняется
     fixture.session.ensure_login(username=webadmin_config['username'], password=webadmin_config['password'])
     return fixture
@@ -58,6 +58,7 @@ def install_server_configuration(host, username, password):
         if remote.path.isfile("config_inc.php"):
             remote.rename("config_inc.php", "config_inc.php.bak")
         remote.upload(os.path.join(os.path.dirname(__file__), "resources/config_inc.php"), "config_inc.php")
+
 
 def restore_server_configuration(host, username, password):
     with ftputil.FTPHost(host, username, password) as remote:

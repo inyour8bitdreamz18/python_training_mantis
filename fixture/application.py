@@ -1,12 +1,16 @@
 from selenium import wd
 from fixture.session import SessionHelper
 from fixture.project import ProjectHelper
+from fixture.james import JamesHelper
+from fixture.signup import SignHelper
+from fixture.mail import MailHelper
+
 # Если нужно постоянно тестировать данные из БД, то добавляем DBHelper в Application
 # Если нет, то создаем отдельную фикстуру для работы с БД
 
 class Application:
 
-    def __init__(self, browser, base_url):
+    def __init__(self, browser, config):
         if browser == "firefox":
             self.wd = wd.Firefox()
         elif browser == "chrome":
@@ -20,7 +24,11 @@ class Application:
         #ссылка на файл SessionHelper, GroupHelper, ContactHelper
         self.session = SessionHelper(self)
         self.project = ProjectHelper(self)
-        self.base_url = base_url
+        self.james = JamesHelper(self)
+        self.signup = SignHelper(self)
+        self.mail = MailHelper(self)
+        self.config = config
+        self.base_url = config["web"]["baseUrl"]
 
     def is_valid(self):
         try:
