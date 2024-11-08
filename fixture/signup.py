@@ -1,5 +1,6 @@
 import re
 
+
 class SignHelper:
 
     def __init__(self, app):
@@ -20,7 +21,6 @@ class SignHelper:
         wd.find_element_by_name("password").send_keys(password)
         wd.find_element_by_name("password_confirm").send_keys(password)
         wd.find_element_by_css_selector('input[value="Update User"]').click()
-
 
     # В тексте (не заголовке) письма есть ссылка http://localhost/mantisbt-1.2.20/verify.php?id=2&confirm_hash=2041b6565aac9380a2e0e3fabe74414d
     def extract_confirmation_url(self, text):

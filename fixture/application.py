@@ -4,6 +4,8 @@ from fixture.project import ProjectHelper
 from fixture.james import JamesHelper
 from fixture.signup import SignHelper
 from fixture.mail import MailHelper
+from fixture.soap import SoapHelper
+
 
 # Если нужно постоянно тестировать данные из БД, то добавляем DBHelper в Application
 # Если нет, то создаем отдельную фикстуру для работы с БД
@@ -27,6 +29,7 @@ class Application:
         self.james = JamesHelper(self)
         self.signup = SignHelper(self)
         self.mail = MailHelper(self)
+        self.soap = SoapHelper(self)
         self.config = config
         self.base_url = config["web"]["baseUrl"]
 
@@ -41,9 +44,5 @@ class Application:
         wd = self.wd
         wd.get(self.base_url)
 
-
     def destroy(self):
         self.wd.quit()
-
-
-

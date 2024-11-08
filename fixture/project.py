@@ -3,7 +3,6 @@ import random
 import re
 
 
-
 class ProjectHelper:
 
     def __init__(self, app):
@@ -16,9 +15,8 @@ class ProjectHelper:
             self.open_projects_table()
         wd.find_element_by_css_selector("input[value='Create New Project']").click()
 
-
     #def return_to_project_table(self):
-        #wd = self.app.wd
+    #wd = self.app.wd
 
     def create_new_project(self, project):
         wd = self.app.wd
@@ -26,7 +24,6 @@ class ProjectHelper:
         self.fill_project_form(project)
         self.project_cache = None
         self.open_project_form()
-
 
     def fill_project_form(self, project):
         wd = self.app.wd
@@ -51,13 +48,11 @@ class ProjectHelper:
             wd.find_element_by_name(field_name).clear()
             wd.find_element_by_name(field_name).send_keys(text)
 
-
     def change_list_value(self, list_name, text):
         wd = self.app.wd
         if text is not None:
             wd.find_element_by_name(list_name).click()
             wd.find_element_by_name(list_name).send_keys(text)
-
 
     def open_projects_table(self):
         wd = self.app.wd
@@ -65,19 +60,16 @@ class ProjectHelper:
         wd.find_element_by_link_text("Manage").click()
         wd.find_element_by_link_text("Manage Projects").click()
 
-
     def open_project_by_id(self, project_id):
         wd = self.app.wd
         #if not (wd.current_url.endswith("/manage_proj_page.php")):
-            #self.open_projects_table()
+        #self.open_projects_table()
         wd.find_element_by_css_selector('a[href="manage_proj_edit_page.php?project_id=%s"]' % project_id).click()
-
 
     def check_if_name_is_unique(self, project_name):
         wd = self.app.wd
         projects = self.get_project_list()
         return any(project.name == project_name for project in projects)
-
 
     def generate_project_name(self, project_name):
         return ("%s#%i" % (project_name, random.randint(1, 100)))
@@ -92,7 +84,6 @@ class ProjectHelper:
         self.open_projects_table()
         self.project_cache = None
 
-
     def extract_id(self, href):
         id = re.search("project_id=([0-9.]+)", href).group(1)
         return id
@@ -101,7 +92,6 @@ class ProjectHelper:
         wd = self.app.wd
         self.open_projects_table()
         return len(wd.find_elements_by_name("tr.row-1")) + len(wd.find_elements_by_name("tr.row-2"))
-
 
     project_cache = None
 
@@ -126,4 +116,3 @@ class ProjectHelper:
                                                       view_status=view_status,
                                                       description=description))
             return list(self.project_cache)
-
