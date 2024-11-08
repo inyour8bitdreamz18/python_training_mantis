@@ -15,15 +15,15 @@ class ProjectHelper:
             self.open_projects_table()
         wd.find_element_by_css_selector("input[value='Create New Project']").click()
 
-    #def return_to_project_table(self):
-    #wd = self.app.wd
+    def return_to_project_table(self):
+        wd = self.app.wd
 
     def create_new_project(self, project):
         wd = self.app.wd
         self.open_project_form()
         self.fill_project_form(project)
-        self.project_cache = None
         self.open_project_form()
+        self.project_cache = None
 
     def fill_project_form(self, project):
         wd = self.app.wd
@@ -68,11 +68,12 @@ class ProjectHelper:
 
     def check_if_name_is_unique(self, project_name):
         wd = self.app.wd
-        projects = self.get_project_list()
+        projects = self.get_projects_list()
+        self.project_cache = None
         return any(project.name == project_name for project in projects)
 
     def generate_project_name(self, project_name):
-        return ("%s#%i" % (project_name, random.randint(1, 100)))
+        return "%s#%i" % (project_name, random.randint(1, 10000))
 
     def delete_project(self, project):
         wd = self.app.wd
@@ -88,14 +89,9 @@ class ProjectHelper:
         id = re.search("project_id=([0-9.]+)", href).group(1)
         return id
 
-    def count(self):
-        wd = self.app.wd
-        self.open_projects_table()
-        return len(wd.find_elements_by_name("tr.row-1")) + len(wd.find_elements_by_name("tr.row-2"))
-
     project_cache = None
 
-    def get_project_list(self):
+    def get_projects_list(self):
         if self.project_cache is None:
             wd = self.app.wd
             self.open_projects_table()
